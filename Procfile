@@ -1,1 +1,1 @@
-web: streamlit pdfGPT.py
+web: streamlit run pdfGPT.py
