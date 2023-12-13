@@ -1,1 +1,1 @@
-web: streamlit run pdfGPT.py
+web: streamlit run pdfGPT.py --server.port $PORT
