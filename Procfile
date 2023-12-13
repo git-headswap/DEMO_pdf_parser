@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit pdfGPT.py
+web: streamlit pdfGPT.py
