@@ -40,31 +40,9 @@ def parsePDF(message, model, info_to_extract):
     st.write(response.json())
 
     st.header("Extracted info")
-    text = response.choices[0].message.content
+    text = response
     st.write(text)
 
-    if False:
-        speech_file_path = "audio/speech.mp3"
-
-        response2 = client.audio.speech.create(
-            model="tts-1",
-            voice="echo",
-            input=text
-        )
-
-        response2.stream_to_file(speech_file_path)
-
-        st.header("Audio generation")
-        st.audio(speech_file_path)
-
-    completion_tokens = response.usage.completion_tokens
-    prompt_tokens = response.usage.prompt_tokens
-
-    st.header("Price estimation")
-    model_used = response.model
-    total_price = prompt_tokens * model_price[model_used]["input"] + completion_tokens * model_price[model_used]["output"]
-
-    st.write(f"Estimated price {total_price:.4f}$")
 
 @st.cache_data
 def ocrPDF(pdf_file):
