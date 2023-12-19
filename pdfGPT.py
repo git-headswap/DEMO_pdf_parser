@@ -37,8 +37,13 @@ def parsePDF(message, model, info_to_extract):
 
     response = requests.post("https://api.headswap.com/demo", headers=headers, json=payload)
 
+    response = response.json()
+
     st.header("Extracted info")
-    st.write(response.json())
+    st.write(response["text"])
+
+    st.header("Time")
+    st.write(response["delta"])
 
 
 @st.cache_data
