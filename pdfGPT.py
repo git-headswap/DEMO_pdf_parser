@@ -49,6 +49,8 @@ def parsePDF(message, model, info_to_extract):
     st.header("Time")
     st.write(round(response["delta"], 3))
 
+    st.header("Price ($USD)")
+    st.write(round(response["total_price"],5))
 
 @st.cache_data
 def ocrPDF(pdf_file):
