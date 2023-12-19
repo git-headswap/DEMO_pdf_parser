@@ -40,10 +40,10 @@ def parsePDF(message, model, info_to_extract):
     response = response.json()
 
     st.header("Extracted info")
-    st.write(response["text"])
+    st.write(response["text"].json())
 
     st.header("Time")
-    st.write(response["delta"])
+    st.write(round(response["delta"], 3))
 
 
 @st.cache_data
