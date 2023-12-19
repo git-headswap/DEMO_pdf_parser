@@ -30,11 +30,14 @@ def parsePDF(message, model, info_to_extract):
         "temperature": 0,
         
     }
+
     headers = {
         "api_key_2": API_KEY
     }
 
     response = requests.post("https://api.headswap.com/demo", headers=headers, json=payload)
+
+    st.write(response.json())
 
     st.header("Extracted info")
     text = response.choices[0].message.content
