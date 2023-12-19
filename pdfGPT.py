@@ -24,14 +24,17 @@ def parsePDF(message, model, info_to_extract):
 
     payload = {
         "model": model,
-        "messages": [{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract}. If the information is not provided please write N/A. Return your response in bullet point format"},
+        "messages": [{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract} as JSON. If the information is not provided please write N/A."},
                 {"role": "user", "content": f"Here is the pdf ocr: {message}"}],
         "max_tokens": 256,
         "temperature": 0,
+        
+    }
+    headers = {
         "api_key_2": API_KEY
     }
 
-    response = requests.post("https://api.headswap.com/demo", headers=payload)
+    response = requests.post("https://api.headswap.com/demo", headers=headers, json=payload)
 
     st.header("Extracted info")
     text = response.choices[0].message.content
