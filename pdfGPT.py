@@ -3,6 +3,7 @@ import streamlit as st
 from pdf2image import convert_from_bytes
 import pytesseract
 import requests
+import json
 
 with st.sidebar:
     API_KEY = st.text_input("Enter your API key")
@@ -40,7 +41,10 @@ def parsePDF(message, model, info_to_extract):
     response = response.json()
 
     st.header("Extracted info")
-    st.write(response["text"].json())
+
+    jsonObj = json.loads(response["text"])
+    
+    st.write(jsonObj)
 
     st.header("Time")
     st.write(round(response["delta"], 3))
