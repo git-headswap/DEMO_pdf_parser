@@ -62,14 +62,23 @@ def tik(words, model="cl100k_base"):
 
 def main():
     with st.sidebar:
-        #st.image("logo.png", width=50)
         API_KEY = st.text_input("Enter your API key")
         if API_KEY:
             if len(API_KEY) > 45 or len(API_KEY) < 40:
                 st.warning("Please enter a valid API key")
                 API_KEY = None
         if not API_KEY:
-            st.image("static/instructions.jpg")
+            # check if we are in light or dark mode
+
+            theme = st.get_option("theme.primaryColor")
+
+            st.image("static/instructions.png")
+
+            #if theme == "light":
+            #    st.image("static/instructions_light.jpg")
+            #else:
+            #    st.image("static/instructions_dark.jpg")
+            
 
     with tab1:
         st.header("PDF parsing demo")
