@@ -4,25 +4,12 @@ from pdf2image import convert_from_bytes
 import pytesseract
 import requests
 import json
+import tiktoken
 
-with st.sidebar:
-    API_KEY = st.text_input("Enter your API key")
+tab1, tab2 = st.tabs(["PDF Parsing", "Token Calculator"])
 
-if API_KEY:
-    with st.sidebar:
-        model = st.radio("Model", ["gpt-4-1106-preview", "gpt-4-1106-vision-preview", "gpt-4", "gpt-4-32k", "gpt-3.5-turbo-1106"], index=4)
-
-model_price = {
-    "gpt-4-1106-preview": {"input":0.01/1000, "output": 0.03/1000},
-    "gpt-4-1106-vision-preview": {"input":0.01/1000, "output": 0.03/1000},
-    "gpt-4-0613": {"input":0.03/1000, "output": 0.06/1000},
-    "gpt-4-32k": {"input":0.06/1000, "output": 0.12/1000},
-    "gpt-3.5-turbo-1106": {"input":0.001/1000, "output": 0.002/1000},
-}
-
-def parsePDF(message, model, info_to_extract):
-    global model_price, API_KEY
-
+@st.cache_data
+def parsePDF(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
     payload = {
         "model": model,
         "messages": [{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract} as JSON. If the information is not provided please write N/A."},
@@ -65,13 +52,75 @@ def ocrPDF(pdf_file):
 
     return text
 
-if API_KEY:
-    st.header("PDF parsing demo")
+@st.cache_data
+def tik(words, model="cl100k_base"):
+    encoding = tiktoken.get_encoding(model)
+    tokens = encoding.encode(words)
+    return tokens
 
-    info_to_extract = st.text_area("Info to extract", "Policy number, type of Policy, insurance, company, name of policy holder, start/end of Policy and birth date")
+def main():
+    with st.sidebar:
+        API_KEY = st.text_input("Enter your API key")
 
-    pdf_file = st.file_uploader("Upload a pdf")
+    with tab1:
+        st.header("PDF parsing demo")
 
-    if pdf_file:
-        text = ocrPDF(pdf_file)
-        parsePDF(text, model, info_to_extract)
+        if API_KEY:
+            info_to_extract = st.text_area("Info to extract", "Policy number, type of Policy, insurance, company, name of policy holder, start/end of Policy and birth date")
+
+            pdf_file = st.file_uploader("Upload a pdf")
+
+            if pdf_file:
+                text = ocrPDF(pdf_file)
+                parsePDF(text, info_to_extract, API_KEY)
+        else:
+            st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
+
+    with tab2:
+        st.header("Token & Price calculator")
+        model = st.selectbox("Model", ["GPT-3", "GPT-4"])
+
+        prompt = st.text_area("Insert prompt text")
+
+        if prompt:
+            char_count = len(prompt)
+            num_tokens = tik(prompt)
+
+            GPT3_MAX_TOKEN_COUNT = 16_385
+            GPT4_MAX_TOKEN_COUNT = 128_000
+
+            if model == "GPT-3":
+                MAX_TOKEN_COUNT = GPT3_MAX_TOKEN_COUNT
+            elif model == "GPT-4":
+                MAX_TOKEN_COUNT = GPT4_MAX_TOKEN_COUNT
+            else:
+                st.write("Please select a model")
+
+            information = {
+                "Character count": char_count,
+                "Number of words": len(prompt.split()),
+                "Number of tokens": len(num_tokens),
+                "Percentage context length": f"{round(len(num_tokens) / MAX_TOKEN_COUNT * 100, 2)}%"
+            }
+
+            st.write(information)
+
+            if len(num_tokens) > MAX_TOKEN_COUNT:
+                st.warning(f"Your prompt exceeds the maximum token count of {MAX_TOKEN_COUNT} tokens for the selected model. Please reduce the number of tokens.")
+
+            st.header("Price ($USD)")
+
+            GPT3_PRICE = 0.001 / 1000
+            GPT4_PRICE = 0.01 / 1000
+
+            if model == "GPT-3":
+                st.write(f"Price: {round(len(num_tokens) * GPT3_PRICE, 4)}$")
+            elif model == "GPT-4":
+                st.write(f"Price: {round(len(num_tokens) * GPT4_PRICE, 4)}$")
+            else:
+                st.write("Please select a model")
+
+
+
+if __name__ == "__main__":
+    main()
