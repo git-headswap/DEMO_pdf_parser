@@ -94,7 +94,8 @@ def main():
             if pdf_file:
                 text = ocrPDF(pdf_file)
                 autoGPT(text, info_to_extract, API_KEY)
-                st.write("To check the ongoing bill, you can visit https://api.headswap.com/")
+                st.write("To check the ongoing bill, you can click [here](https://api.headswap.com/)")
+
         else:
             st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
 
