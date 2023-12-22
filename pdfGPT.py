@@ -11,12 +11,12 @@ st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layo
 tab1, tab2 = st.tabs(["PDF Parsing", "Token Calculator"])
 
 @st.cache_data
-def parsePDF(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
+def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
     payload = {
         "model": model,
         "messages": [{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract} as JSON. If the information is not provided please write N/A."},
                 {"role": "user", "content": f"Here is the pdf ocr: {message}"}],
-        "max_tokens": 256,
+        "max_tokens": 2048,
         "temperature": 0,
         
     }
@@ -31,7 +31,10 @@ def parsePDF(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
 
     st.header("Extracted info")
 
-    jsonObj = json.loads(response["text"])
+    try:
+        jsonObj = json.loads(response["text"])
+    except:
+        jsonObj = response["text"]
     
     st.write(jsonObj)
 
@@ -90,7 +93,8 @@ def main():
 
             if pdf_file:
                 text = ocrPDF(pdf_file)
-                parsePDF(text, info_to_extract, API_KEY)
+                autoGPT(text, info_to_extract, API_KEY)
+                st.write("To check the ongoing bill, you can visit https://api.headswap.com/")
         else:
             st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
 
