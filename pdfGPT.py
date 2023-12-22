@@ -6,6 +6,8 @@ import requests
 import json
 import tiktoken
 
+st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
+
 tab1, tab2 = st.tabs(["PDF Parsing", "Token Calculator"])
 
 @st.cache_data
@@ -60,7 +62,14 @@ def tik(words, model="cl100k_base"):
 
 def main():
     with st.sidebar:
+        #st.image("logo.png", width=50)
         API_KEY = st.text_input("Enter your API key")
+        if API_KEY:
+            if len(API_KEY) > 45 or len(API_KEY) < 40:
+                st.warning("Please enter a valid API key")
+                API_KEY = None
+        if not API_KEY:
+            st.image("static/instructions.jpg")
 
     with tab1:
         st.header("PDF parsing demo")
@@ -119,8 +128,6 @@ def main():
                 st.write(f"Price: {round(len(num_tokens) * GPT4_PRICE, 4)}$")
             else:
                 st.write("Please select a model")
-
-
 
 if __name__ == "__main__":
     main()
