@@ -43,7 +43,7 @@ def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
 
     st.header("Price ($USD)")
     st.write(f"Api call costs {round(response['total_price'],5)}$")
-    st.write(f"That is {round(1/response['total_price'])} calls/$")
+    st.write(f"That is {round(1/response['total_price'])} docs/$")
 
 @st.cache_data
 def ocrPDF(pdf_file):
