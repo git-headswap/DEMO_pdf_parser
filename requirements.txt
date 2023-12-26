@@ -4,3 +4,4 @@ pytesseract==0.3.10
 streamlit==1.28.1
 requests==2.31.0
 TikToken==0.5.2
+xmltodict==0.13.0

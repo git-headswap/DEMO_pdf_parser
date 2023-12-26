@@ -5,10 +5,11 @@ import pytesseract
 import requests
 import json
 import tiktoken
+import xmltodict
 
 st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
 
-tab1, tab2 = st.tabs(["PDF Parsing", "Token Calculator"])
+tab1, tab2, tab3 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing"])
 
 @st.cache_data
 def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
@@ -134,12 +135,83 @@ def tokenCalculator():
         else:
             st.write("Please select a model")
 
+def xlmParsingDemo():
+    @st.cache_data
+    def xmltodict_parse(xml_data):
+        return xmltodict.parse(xml_data)
+    def parse_dict(dict_data):
+        # Get developer information
+        data = dict_data["developer"]
+        name = data["name"]
+        data_id = data["id"]
+
+        # Get developers programs
+        programs = data["programs"]["program"]
+        n_programs = len(programs)
+        st.write(f"Found {n_programs} programs from {name} with id {data_id}")
+        
+        # Get properties from programs
+        program_to_watch = st.slider("Select program to inspect", 0, n_programs-1, 0)
+        example_program = programs[program_to_watch]
+        program_name = example_program["name"]
+        program_id = example_program["id"]
+        program_properties = example_program["properties"]["property"]
+
+        # if property is a dict:
+        if isinstance(program_properties, dict):
+            n_program_properties = 1
+            program_properties = [program_properties]
+        else:
+            n_program_properties = len(program_properties)
+
+        st.write(f"Looking at program {program_name} with name {program_id} and {n_program_properties} properties")
+
+        try:
+            images = example_program["images"]["image"]
+            if images:
+                st.image(images)
+        except:
+            st.error("Could not get the image")
+
+        show_program = st.checkbox("Show sample program", value=False, key="show_program")
+        if show_program:
+            st.write(example_program)
+
+        show_property = st.checkbox("Show sample property", value=False, key="show_property")
+        if show_property:
+            st.write(program_properties[0])
+
+    st.header("XLM parsing demo")
+    # dropdown
+    upload_type = st.selectbox("Upload type", ["Text", "File"])
+    if upload_type == "File":
+        file = st.file_uploader("Upload XML File", type=['xml'])
+        if file:
+            xml_data = file.read()
+            try:
+                data_dict = xmltodict_parse(xml_data)
+                st.success("File Uploaded Successfully")
+            except:
+                st.error("Invalid XML File")
+            parse_dict(data_dict)
+    elif upload_type == "Text":
+        xml_data = st.text_area("Paste XML data here")
+        if xml_data:
+            try:
+                data_dict = xmltodict_parse(xml_data)
+                st.success("File Uploaded Successfully")
+            except:
+                st.error("Invalid XML File")
+            parse_dict(data_dict)
+
 def main():
     API_KEY = sidebar()
     with tab1:
         pdfParsingDemo(API_KEY)
     with tab2:
         tokenCalculator()
+    with tab3:
+        xlmParsingDemo()
         
 if __name__ == "__main__":
     main()
