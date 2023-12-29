@@ -15,9 +15,6 @@ tab1, tab2, tab3, tab4 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMP
 def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
     payload = {
         "model": model,
-        #"messages": [{"role": "system", "content": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract} as JSON. If the information is not provided please write N/A."},
-        #        {"role": "user", "content": f"Here is the pdf ocr: {message}"}],
-
         "prompt": f"You will receive an ocr PDF, your job is to extract the following information: {info_to_extract} as JSON. If the information is not provided please write N/A.",
         "text": f"Here is the pdf ocr: {message}",
         "max_tokens": 2048,
