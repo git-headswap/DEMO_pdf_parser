@@ -22,8 +22,7 @@ def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
     }
 
     headers = {
-        "api_key_2": API_KEY,
-        "peek": "true"
+        "api_key_2": API_KEY
     }
 
     response = requests.post("https://api.headswap.com/demo", headers=headers, json=payload)
@@ -208,9 +207,11 @@ def emailGPT(API_KEY):
     st.header("AutoGPT - email")
     #st.write("This is a demo of the new AutoGPT input service. The service is currently in beta. To use the service tell Davide to add your email to the beta and forward an email to autoagentshs@gmail.com.")
     if API_KEY:
+        peek = st.checkbox("Peek", value=False)
         if st.button("Refresh Emails"):
             headers = {
-                "api_key_2": API_KEY
+                "api_key_2": API_KEY,
+                "peek": peek
             }
             r = requests.get("https://api.headswap.com/refresh", headers=headers)
             try:
