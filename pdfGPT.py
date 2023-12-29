@@ -211,7 +211,7 @@ def emailGPT(API_KEY):
         if st.button("Refresh Emails"):
             headers = {
                 "api_key_2": API_KEY,
-                "peek": peek
+                "peek": str(peek)
             }
             r = requests.get("https://api.headswap.com/refresh", headers=headers)
             try:
