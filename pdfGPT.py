@@ -9,7 +9,7 @@ import xmltodict
 
 st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
 
-tab1, tab2, tab3 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing"])
+tab1, tab2, tab3, tab4 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email"])
 
 @st.cache_data
 def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
@@ -204,6 +204,23 @@ def xlmParsingDemo():
                 st.error("Invalid XML File")
             parse_dict(data_dict)
 
+def emailGPT(API_KEY):
+    st.header("AutoGPT - email")
+    #st.write("This is a demo of the new AutoGPT input service. The service is currently in beta. To use the service tell Davide to add your email to the beta and forward an email to autoagentshs@gmail.com.")
+    if API_KEY:
+        if st.button("Refresh Emails"):
+            headers = {
+                "api_key_2": API_KEY
+            }
+            r = requests.get("https://api.headswap.com/refresh", headers=headers)
+            try:
+                r_json = json.loads(r.text)
+            except:
+                r_json = r.text
+            st.write(r_json)
+    else:
+        st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
+
 def main():
     API_KEY = sidebar()
     with tab1:
@@ -212,6 +229,9 @@ def main():
         tokenCalculator()
     with tab3:
         xlmParsingDemo()
+    with tab4:
+        emailGPT(API_KEY)
         
+
 if __name__ == "__main__":
     main()
