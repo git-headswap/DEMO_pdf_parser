@@ -22,7 +22,8 @@ def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
     }
 
     headers = {
-        "api_key_2": API_KEY
+        "api_key_2": API_KEY,
+        "peek": "true"
     }
 
     response = requests.post("https://api.headswap.com/demo", headers=headers, json=payload)
