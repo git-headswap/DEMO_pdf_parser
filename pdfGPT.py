@@ -6,10 +6,9 @@ import requests
 import json
 import tiktoken
 import xmltodict
+import pandas as pd
 
 st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
-
-tab1, tab2, tab3, tab4 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email"])
 
 @st.cache_data
 def autoGPT(message, info_to_extract, API_KEY, model="gpt-3.5-turbo-1106"):
@@ -73,7 +72,8 @@ def sidebar():
                 API_KEY = None
         else:
             st.image("static/instructions.png")
-    return API_KEY
+        developer = st.checkbox("Developer mode")
+    return API_KEY, developer
 
 def pdfParsingDemo(API_KEY):
     st.header("PDF parsing demo")
@@ -222,17 +222,91 @@ def emailGPT(API_KEY):
     else:
         st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
 
+def get_user_data(API_KEY):
+    @st.cache_data
+    def get_users(API_KEY):
+        headers = {
+            "api_key_2": API_KEY
+        }
+        r = requests.get("https://api.headswap.com/users", headers=headers)
+        try:
+            r_json = json.loads(r.text)
+            assert r_json['status'] == "ok", r_json['error']
+            r_json = r_json['content']
+        except Exception as e:
+            st.write(r.text)
+            st.error(e)
+            return None
+        return r_json
+    
+    @st.cache_data
+    def get_user(API_KEY, user):
+        headers = {
+            "api_key_2": API_KEY,
+            "client": user
+        }
+        r = requests.get("https://api.headswap.com/user", headers=headers)
+        try:
+            r_json = json.loads(r.text)
+            assert r_json['status'] == "ok", r_json['error']
+            r_json = r_json['content']
+        except Exception as e:
+            st.write(r.text)
+            st.error(e)
+            return None
+        return r_json
+
+    st.header("User status")
+    if API_KEY:
+        result = get_users(API_KEY)
+        if not result:
+            return
+        users = ["Please select user"] + list(result.keys())
+        if users:
+            user = st.selectbox("Select user", users)
+            if user != "Please select user":
+                key = result[user]
+                user_data = get_user(API_KEY, key)
+
+                salesforce_bearer = user_data['salesforce_bearer']
+                if salesforce_bearer:
+                    st.success("Connected to Salesforce")
+                else:
+                    st.warning("Not connected to Salesforce")
+
+                # show the rest of the data
+                del user_data['salesforce_bearer']
+
+                # user_data is a dict
+                df = pd.DataFrame.from_dict(user_data, orient='index')
+                df = df.reset_index()
+                df.columns = ["Key", "Value"]
+                st.dataframe(df)
+
+
+    else:
+        st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
+
 def main():
-    API_KEY = sidebar()
-    with tab1:
-        pdfParsingDemo(API_KEY)
-    with tab2:
-        tokenCalculator()
-    with tab3:
-        xlmParsingDemo()
-    with tab4:
-        emailGPT(API_KEY)
-        
+    API_KEY, developer = sidebar()
+    if not developer:
+        tab1, tab2 = st.tabs(["PDF Parsing", "Token Calculator"])
+        with tab1:
+            pdfParsingDemo(API_KEY)
+        with tab2:
+            tokenCalculator()
+    else:
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email", "User status"])
+        with tab1:
+            pdfParsingDemo(API_KEY)
+        with tab2:
+            tokenCalculator()
+        with tab3:
+            xlmParsingDemo()
+        with tab4:
+            emailGPT(API_KEY)
+        with tab5:
+            get_user_data(API_KEY)
 
 if __name__ == "__main__":
     main()
