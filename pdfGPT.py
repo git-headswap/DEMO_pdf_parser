@@ -7,7 +7,7 @@ import json
 import tiktoken
 import xmltodict
 
-st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
+st.set_page_config(page_title="Headswap Demo", page_icon="static/favicon.ico", layout="wide")
 
 tab1, tab2, tab3, tab4 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email"])
 
