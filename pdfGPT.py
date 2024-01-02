@@ -239,7 +239,6 @@ def get_user_data(API_KEY):
             return None
         return r_json
     
-    @st.cache_data
     def get_user(API_KEY, user):
         headers = {
             "api_key_2": API_KEY,
