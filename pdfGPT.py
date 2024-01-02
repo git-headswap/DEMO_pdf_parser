@@ -264,24 +264,25 @@ def get_user_data(API_KEY):
         users = ["Please select user"] + list(result.keys())
         if users:
             user = st.selectbox("Select user", users)
-            if user != "Please select user":
-                key = result[user]
-                user_data = get_user(API_KEY, key)
+            if st.button("Get user data"):
+                if user != "Please select user":
+                    key = result[user]
+                    user_data = get_user(API_KEY, key)
 
-                salesforce_bearer = user_data['salesforce_bearer']
-                if salesforce_bearer:
-                    st.success("Connected to Salesforce")
-                else:
-                    st.warning("Not connected to Salesforce")
+                    salesforce_bearer = user_data['salesforce_bearer']
+                    if salesforce_bearer:
+                        st.success("Connected to Salesforce")
+                    else:
+                        st.warning("Not connected to Salesforce")
 
-                # show the rest of the data
-                del user_data['salesforce_bearer']
+                    # show the rest of the data
+                    del user_data['salesforce_bearer']
 
-                # user_data is a dict
-                df = pd.DataFrame.from_dict(user_data, orient='index')
-                df = df.reset_index()
-                df.columns = ["Key", "Value"]
-                st.dataframe(df)
+                    # user_data is a dict
+                    df = pd.DataFrame.from_dict(user_data, orient='index')
+                    df = df.reset_index()
+                    df.columns = ["Key", "Value"]
+                    st.dataframe(df)
 
 
     else:
