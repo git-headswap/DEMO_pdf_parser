@@ -73,6 +73,8 @@ def sidebar():
         else:
             st.image("static/instructions.png")
         developer = st.checkbox("Developer mode")
+
+        st.write("[Questions or Feedback](https://forms.gle/Y3xJP6XCFWVrZj4DA)")
     return API_KEY, developer
 
 def pdfParsingDemo(API_KEY):
