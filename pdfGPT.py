@@ -7,6 +7,8 @@ import json
 import tiktoken
 import xmltodict
 import pandas as pd
+import time
+import jwt
 
 st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
 
@@ -289,6 +291,92 @@ def get_user_data(API_KEY):
     else:
         st.warning("Please enter your Headswap-API key in the sidebar to use this tab")
 
+def refresh_token(JWS, valid_for=300):
+    current_time = time.time()
+    cdpTokenRefreshTime = JWS.get('dne_cdpTokenRefreshTime', 0) / 1000  # Convert to seconds
+    cdpTokenAge = (current_time - cdpTokenRefreshTime) / 60  # Age in minutes
+
+    if cdpTokenAge < 115:
+        st.write("CDP token valid")
+        st.write(f"CDP token age: {round(cdpTokenAge, 2)} minutes")
+    else:
+        st.write("Refreshing token...")
+        JWS['dne_cdpTokenRefreshTime'] = current_time * 1000  # Store in milliseconds
+
+        # JWT header
+        header = {
+            "alg": "RS256",
+            "typ": "JWT"
+        }
+
+        # JWT payload
+        payload = {
+            "iss": JWS['clientId'],
+            "sub": JWS['userName'],
+            "aud": JWS['loginUrl'],
+            "exp": round(current_time) + valid_for  # Token expiration (5 minutes from now)
+        }
+
+        # Sign JWT
+        try:
+            jwt_token = jwt.encode(payload, JWS['privateKey'].encode(), algorithm="RS256", headers=header)
+            st.write("JWT Assertion:", jwt_token)
+            JWS['dne_cdpAssertion'] = jwt_token
+        except Exception as e:
+            st.error(f'Failed to sign the JWT assertion: {e}')
+            return
+
+        # S2S Access Token Payload
+        s2sFlow = {
+            "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+            "assertion": jwt_token
+        }
+
+        token_url = f'https://{JWS["loginUrl"]}/services/oauth2/token'
+        response = requests.post(token_url, data=s2sFlow)
+        if response.ok:
+            data = response.json()
+            JWS["dne_cdpAuthToken"] = data.get("access_token")
+            JWS["dne_cdpInstanceUrl"] = data.get("instance_url")
+
+            # CDP Token Exchange Payload
+            cdpFlow = {
+                "grant_type": "urn:salesforce:grant-type:external:cdp",
+                "subject_token": JWS['dne_cdpAuthToken'],
+                "subject_token_type": "urn:ietf:params:oauth:token-type:access_token"
+            }
+
+            exchange_url = JWS['dne_cdpInstanceUrl'] + '/services/a360/token'
+            exchange_response = requests.post(exchange_url, data=cdpFlow)
+            if exchange_response.ok:
+                token_data = exchange_response.json()
+                JWS["dne_cdpOffcoreToken"] = token_data.get("access_token")
+                JWS["dne_cdpOffcoreUrl"] = token_data.get("instance_url")
+        else:
+            st.error("Error in token refresh:", response.text)
+
+    return JWS
+        
+
+def tocken_signing():
+    # JWT token signing flow
+    st.header("JWT token signing")
+
+    file = st.file_uploader("Upload JSON File", type=['json'])
+    if file:
+        json_data = file.read()
+        try:
+            data_dict = json.loads(json_data)
+        except:
+            st.error("Invalid JSON File")
+
+        minutes = st.number_input("Valid for (minutes)", value=10, step=1)
+        seconds = minutes * 60
+
+        if st.button("Sign token"):
+            token = refresh_token(data_dict, seconds)
+            st.write(token)
+
 def main():
     API_KEY, developer = sidebar()
     if not developer:
@@ -298,7 +386,7 @@ def main():
         with tab2:
             tokenCalculator()
     else:
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email", "User status"])
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email", "User status", "JWT - token signing"])
         with tab1:
             pdfParsingDemo(API_KEY)
         with tab2:
@@ -309,6 +397,8 @@ def main():
             emailGPT(API_KEY)
         with tab5:
             get_user_data(API_KEY)
+        with tab6:
+            tocken_signing()
 
 if __name__ == "__main__":
     main()
