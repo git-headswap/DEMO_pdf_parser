@@ -138,6 +138,11 @@ def tokenCalculator():
         else:
             st.write("Please select a model")
 
+def lightningOutFlowDemo():
+    st.header("Lightning Out Flow Demo")
+    st.write("This is an example of a screen flow in salesforce embedded in a custom app hosted on heroku taking user parameters")
+    
+
 def xlmParsingDemo():
     @st.cache_data
     def xmltodict_parse(xml_data):
