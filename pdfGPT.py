@@ -141,7 +141,7 @@ def tokenCalculator():
 def lightningOutFlowDemo():
     st.header("Lightning Out Flow Demo")
     st.write("This is an example of a screen flow in salesforce embedded in a custom app hosted on heroku taking user parameters")
-    
+
 
 def xlmParsingDemo():
     @st.cache_data
@@ -385,11 +385,13 @@ def tocken_signing():
 def main():
     API_KEY, developer = sidebar()
     if not developer:
-        tab1, tab2 = st.tabs(["PDF Parsing", "Token Calculator"])
+        tab1, tab2, tab3 = st.tabs(["PDF Parsing", "Token Calculator", "Lightning Out Flow"])
         with tab1:
             pdfParsingDemo(API_KEY)
         with tab2:
             tokenCalculator()
+        with tab3:
+            lightningOutFlowDemo()
     else:
         tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email", "User status", "JWT - token signing"])
         with tab1:
