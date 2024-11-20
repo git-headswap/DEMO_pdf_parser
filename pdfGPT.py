@@ -80,7 +80,7 @@ def sidebar():
     return API_KEY, developer
 
 def pdfParsingDemo(API_KEY):
-    st.header("PDF parsing demo")
+    st.header("PDF parsing 1 demo")
     if API_KEY:
         info_to_extract = st.text_area("Info to extract", "Policy number, type of Policy, insurance, company, name of policy holder, start/end of Policy and birth date")
 
@@ -385,7 +385,7 @@ def tocken_signing():
 def main():
     API_KEY, developer = sidebar()
     if not developer:
-        tab1, tab2, tab3 = st.tabs(["PDF Parsing", "Token Calculator", "Lightning Out Flow"])
+        tab1, tab2, tab3 = st.tabs(["PDF Parsing 1", "Token Calculator", "Lightning Out Flow"])
         with tab1:
             pdfParsingDemo(API_KEY)
         with tab2:
@@ -393,7 +393,7 @@ def main():
         with tab3:
             lightningOutFlowDemo()
     else:
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["PDF Parsing", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email", "User status", "JWT - token signing"])
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["PDF Parsing 1", "Token Calculator", "RAM - XLMParsing", "AutoGPT - email", "User status", "JWT - token signing"])
         with tab1:
             pdfParsingDemo(API_KEY)
         with tab2:
