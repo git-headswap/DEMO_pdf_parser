@@ -9,6 +9,7 @@ import xmltodict
 import pandas as pd
 import time
 import jwt
+import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Headswap Demo", page_icon="static/logo.png", layout="wide")
 
@@ -141,7 +142,26 @@ def tokenCalculator():
 def lightningOutFlowDemo():
     st.header("Lightning Out Flow Demo")
     st.write("This is an example of a screen flow in salesforce embedded in a custom app hosted on heroku taking user parameters")
+    html_content = """
+        <html>
 
+        <head>
+
+            <title>Page Title</title>
+
+        </head>
+
+        <body>
+
+            <h1>This is a Heading</h1>
+
+            <p>This is a paragraph.</p>
+
+        </body>
+
+        </html>
+    """
+    components.html(html_content, height=600, scrolling=True)
 
 def xlmParsingDemo():
     @st.cache_data
