@@ -142,25 +142,47 @@ def tokenCalculator():
 def lightningOutFlowDemo():
     st.header("Lightning Out Flow Demo")
     st.write("This is an example of a screen flow in salesforce embedded in a custom app hosted on heroku taking user parameters")
+    # HTML content including styles, external script, and inline script
     html_content = """
-        <html>
+    <html>
 
-        <head>
+    <style>
+      a {
+        color: orange;
+      }
+    </style>
 
-            <title>Page Title</title>
+    <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
 
-        </head>
+    <div data-lightning-out="true"></div>
 
-        <body>
+    <script>
+      const appName = 'c:AccountExternal';
+      const componentName = 'c:AccountExternalSIte';
+      const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team';
+      const targetElement = document.querySelector("[data-lightning-out]");
+      const componentAttributes = {};
 
-            <h1>This is a Heading</h1>
+      $Lightning.use(
+        appName,
+        function (){
+          $Lightning.createComponent(
+            componentName,
+            componentAttributes,
+            targetElement,
+            function (cmp){
+              console.log('lightning component created');
+            }
+          );
+        },
+        lightningEndpoint
+      );
+    </script>
 
-            <p>This is a paragraph.</p>
-
-        </body>
-
-        </html>
+    </html>
     """
+    
+    # Embedding the HTML content with components.html
     components.html(html_content, height=600, scrolling=True)
 
 def xlmParsingDemo():
