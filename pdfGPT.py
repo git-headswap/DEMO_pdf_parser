@@ -147,9 +147,9 @@ def lightningOutFlowDemo():
         <html>
 
         <style>
-        a {
-            color: orange;
-        }
+            a {
+                color: orange;
+            }
         </style>
 
         <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
@@ -157,48 +157,44 @@ def lightningOutFlowDemo():
         <div data-lightning-out="true"></div>
 
         <script>
-        // Function to retrieve query parameters from the URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        // Retrieve the recordId from the URL
-        const recordId = getQueryParam('recordId') || '001FS00000hufmHYAQ'; // Default value if not provided
-
-        const appName = 'c:AccountExternal';
-        const componentName = 'c:AccountExternalSIte';
-        const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team/s/?accId=001FS00000hufmHYAQ';
-        const targetElement = document.querySelector("[data-lightning-out]");
-        
-        // Pass the recordId as a component attribute
-        const componentAttributes = {
-            flowInputs: [
-            {
-                name: 'recordId',
-                type: 'String',
-                value: recordId
+            // Function to retrieve query parameters from the URL
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
             }
-            ]
-        };
 
-        $Lightning.use(
-            appName,
-            function () {
-            $Lightning.createComponent(
-                componentName,
-                componentAttributes,
-                targetElement,
-                function (cmp) {
-                console.log('Lightning component created');
-                }
+            // Retrieve the recordId from the URL
+            const recordId = getQueryParam('recordId') || '001FS00000hufmHYAQ'; // Default value if not provided
+
+            const appName = 'c:AccountExternal'; // Lightning Out app name
+            const componentName = 'c:AccountExternalSIte'; // LWC name
+            const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team'; // Lightning Out endpoint
+            const targetElement = document.querySelector("[data-lightning-out]");
+
+            // Pass the recordId as a component attribute
+            const componentAttributes = {
+                recordId: recordId // Directly pass the recordId
+            };
+
+            // Initialize Lightning Out and create the LWC component
+            $Lightning.use(
+                appName,
+                function () {
+                    $Lightning.createComponent(
+                        componentName,
+                        componentAttributes,
+                        targetElement,
+                        function (cmp) {
+                            console.log('Lightning component created with recordId:', recordId);
+                        }
+                    );
+                },
+                lightningEndpoint
             );
-            },
-            lightningEndpoint
-        );
         </script>
 
         </html>
+
 
     """
     
