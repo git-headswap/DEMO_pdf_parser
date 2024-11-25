@@ -168,7 +168,7 @@ def lightningOutFlowDemo():
 
         const appName = 'c:AccountExternal';
         const componentName = 'c:AccountExternalSIte';
-        const lightningEndpoint = 'https://https://headswapsa--copy.sandbox.my.site.com/team/s/?accId=001FS00000hufmHYAQ';
+        const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team/s/?accId=001FS00000hufmHYAQ';
         const targetElement = document.querySelector("[data-lightning-out]");
         
         // Pass the recordId as a component attribute
