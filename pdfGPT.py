@@ -144,42 +144,62 @@ def lightningOutFlowDemo():
     st.write("This is an example of a screen flow in salesforce embedded in a custom app hosted on heroku taking user parameters")
     # HTML content including styles, external script, and inline script
     html_content = """
-    <html>
+        <html>
 
-    <style>
-      a {
-        color: orange;
-      }
-    </style>
+        <style>
+        a {
+            color: orange;
+        }
+        </style>
 
-    <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
+        <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
 
-    <div data-lightning-out="true"></div>
+        <div data-lightning-out="true"></div>
 
-    <script>
-      const appName = 'c:AccountExternal';
-      const componentName = 'c:AccountExternalSIte';
-      const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team';
-      const targetElement = document.querySelector("[data-lightning-out]");
-      const componentAttributes = {};
+        <script>
+        // Function to retrieve query parameters from the URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
 
-      $Lightning.use(
-        appName,
-        function (){
-          $Lightning.createComponent(
-            componentName,
-            componentAttributes,
-            targetElement,
-            function (cmp){
-              console.log('lightning component created');
+        // Retrieve the recordId from the URL
+        const recordId = getQueryParam('recordId') || '001FS00000hufmHYAQ'; // Default value if not provided
+
+        const appName = 'c:AccountExternal';
+        const componentName = 'c:AccountExternalSIte';
+        const lightningEndpoint = 'https://https://headswapsa--copy.sandbox.my.site.com/team/s/?accId=001FS00000hufmHYAQ;
+        const targetElement = document.querySelector("[data-lightning-out]");
+        
+        // Pass the recordId as a component attribute
+        const componentAttributes = {
+            flowInputs: [
+            {
+                name: 'recordId',
+                type: 'String',
+                value: recordId
             }
-          );
-        },
-        lightningEndpoint
-      );
-    </script>
+            ]
+        };
 
-    </html>
+        $Lightning.use(
+            appName,
+            function () {
+            $Lightning.createComponent(
+                componentName,
+                componentAttributes,
+                targetElement,
+                function (cmp) {
+                console.log('Lightning component created');
+                }
+            );
+            },
+            lightningEndpoint
+        );
+        </script>
+
+        </html>
+
     """
     
     # Embedding the HTML content with components.html
