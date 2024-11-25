@@ -152,7 +152,7 @@ def lightningOutFlowDemo():
             }
         </style>
 
-        <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
+        <script src="https://headswapsa--copy.sandbox.my.site.com/team//s/?accId=001FS00000hufmHYAQ/lightning/lightning.out.js"></script>
 
         <div data-lightning-out="true"></div>
 
@@ -168,7 +168,7 @@ def lightningOutFlowDemo():
 
             const appName = 'c:AccountExternal'; // Lightning Out app name
             const componentName = 'c:AccountExternalSIte'; // LWC name
-            const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team/s/?accId=001FS00000hufmHYAQ'; // Lightning Out endpoint
+            const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team'; // Lightning Out endpoint
             const targetElement = document.querySelector("[data-lightning-out]");
 
             // Pass the recordId as a component attribute
