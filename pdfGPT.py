@@ -152,7 +152,7 @@ def lightningOutFlowDemo():
             }
         </style>
 
-        <script src="https://headswapsa--copy.sandbox.my.site.com/team//s/?accId=001FS00000hufmHYAQ/lightning/lightning.out.js"></script>
+        <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
 
         <div data-lightning-out="true"></div>
 
