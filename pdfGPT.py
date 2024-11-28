@@ -165,9 +165,9 @@ def lightningOutFlowDemo():
 
             // Retrieve the recordId from the URL
             const recordId = getQueryParam('recordId') || '001FS00000iSZG3YAO'; // Default value if not provided
-            const paramValue = getQueryParam(recordId);
+            //const paramValue = getQueryParam(recordId);   parameter is: ${paramValue}
                 if (paramValue) {
-                    alert(`The value of the "${recordId}" parameter is: ${paramValue}`);
+                    alert(`The value of the "${recordId}" `);
                 } else {
                     alert(`The parameter "${recordId}" was not found in the URL.`);
                 }
