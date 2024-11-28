@@ -158,17 +158,19 @@ def lightningOutFlowDemo():
 
         <script>
             // Function to retrieve query parameters from the URL
-    window.onload = function() {
-      //const urlParams = new URLSearchParams(window.location.search);
-      const urlParams = new URL(window.location.href).searchParams;
-      const recordId = urlParams.get('recordId') || '001FS00000iSZG3YAO';
+            function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.href.split('?')[1]);
+            return urlParams.get(param);
+            }
+
+            // Retrieve the recordId from the URL
+            const recordId = getQueryParam('recordId') || '001FS00000iSZG3YAO'; // Default value if not provided
       
-      if (recordId) {
-        console.log(`The value of the recordId is: ${recordId}`);
-      } else {
-        console.log(`The parameter recordId was not found in the URL.`);
-      }
-      }
+                if (recordId) {
+                    alert(`The value of the "${recordId}" `);
+                } else {
+                    alert(`The parameter "${recordId}" was not found in the URL.`);
+                }
 
             const appName = 'c:AccountExternal'; // Lightning Out app name
             const componentName = 'c:AccountExternalSIte'; // LWC name
