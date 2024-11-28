@@ -163,6 +163,17 @@ def lightningOutFlowDemo():
                 return urlParams.get(param);
             }
 
+                // Retrieve a specific parameter from the URL (e.g., "name")
+                const paramName = 'recordId'; // Replace 'name' with the parameter you want to extract
+                const paramValue = getQueryParam(paramName);
+
+                // Check if the parameter exists and show it in an alert
+                if (paramValue) {
+                    alert(`The value of the "${paramName}" parameter is: ${paramValue}`);
+                } else {
+                    alert(`The parameter "${paramName}" was not found in the URL.`);
+                }
+
             // Retrieve the recordId from the URL
             const recordId = getQueryParam('recordId') || '001FS00000iSZG3YAO'; // Default value if not provided
 
