@@ -145,57 +145,45 @@ def lightningOutFlowDemo():
     # HTML content including styles, external script, and inline script
     html_content = """
         <html>
-
         <style>
             a {
-                color: orange;
+            color: orange;
             }
         </style>
-
         <script src="https://headswapsa--copy.sandbox.my.site.com/team/lightning/lightning.out.js"></script>
-
         <div data-lightning-out="true"></div>
-
         <script>
-            // Function to retrieve query parameters from the URL
-           
-
-            const urlParams = new URLSearchParams(window.location.href.split('?')[1]);
-            // Retrieve the recordId from the URL
-            const recordId = urlParams.get('recordId') || '001FS00000iSZG3YAO'; // Default value if not provided
-      
-                if (recordId) {
-                    alert(`The value of the "${recordId}" `);
-                } else {
-                    alert(`The parameter "${recordId}" was not found in the URL.`);
-                }
-            const appName = 'c:AccountExternal'; // Lightning Out app name
-            const componentName = 'c:AccountExternalSIte'; // LWC name
-            const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team'; // Lightning Out endpoint
+            window.onload = function() {
+            const urlParams = new URL(window.location.href).searchParams;
+            const recordId = urlParams.get('recordId') || '001FS00000iSZG3YAO';
+            
+            console.log('Record ID:', recordId);
+            
+            const appName = 'c:AccountExternal';
+            const componentName = 'c:AccountExternalSIte';
+            const lightningEndpoint = '(link unavailable)';
             const targetElement = document.querySelector("[data-lightning-out]");
-
-            // Pass the recordId as a component attribute
+            
             const componentAttributes = {
-                recordId: recordId // Directly pass the recordId
+                recordId: recordId
             };
-
-            // Initialize Lightning Out and create the LWC component
+            
             $Lightning.use(
                 appName,
-                function () {
-                    $Lightning.createComponent(
-                        componentName,
-                        componentAttributes,
-                        targetElement,
-                        function (cmp) {
-                            console.log('Lightning component created with recordId:', recordId);
-                        }
-                    );
+                function() {
+                $Lightning.createComponent(
+                    componentName,
+                    componentAttributes,
+                    targetElement,
+                    function(cmp) {
+                    console.log('Lightning component created with recordId:', recordId);
+                    }
+                );
                 },
                 lightningEndpoint
             );
+            };
         </script>
-
         </html>
 
 
