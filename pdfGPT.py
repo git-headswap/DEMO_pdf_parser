@@ -171,7 +171,7 @@ def lightningOutFlowDemo():
                 } else {
                     alert(`The parameter "${recordId}" was not found in the URL.`);
                 }
-            debugger;
+            
             const appName = 'c:AccountExternal'; // Lightning Out app name
             const componentName = 'c:AccountExternalSIte'; // LWC name
             const lightningEndpoint = 'https://headswapsa--copy.sandbox.my.site.com/team'; // Lightning Out endpoint
