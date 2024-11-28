@@ -164,8 +164,8 @@ def lightningOutFlowDemo():
             }
 
             // Retrieve the recordId from the URL
-            const recordId = getQueryParam(recordId); //|| '001FS00000iSZG3YAO'; // Default value if not provided
-            //const paramValue = getQueryParam(recordId);   
+            const recordId = getQueryParam('recordId') || '001FS00000iSZG3YAO'; // Default value if not provided
+      
                 if (recordId) {
                     alert(`The value of the "${recordId}" `);
                 } else {
