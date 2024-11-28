@@ -158,9 +158,10 @@ def lightningOutFlowDemo():
 
         <script>
             // Function to retrieve query parameters from the URL
+            // Function to retrieve query parameters from the URL
             function getQueryParam(param) {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get(param);
+            const urlParams = new URLSearchParams(window.location.href.split('?')[1]);
+            return urlParams.get(param);
             }
 
             // Retrieve the recordId from the URL
