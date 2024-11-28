@@ -167,6 +167,7 @@ def lightningOutFlowDemo():
       } else {
         console.log(`The parameter recordId was not found in the URL.`);
       }
+      }
 
             const appName = 'c:AccountExternal'; // Lightning Out app name
             const componentName = 'c:AccountExternalSIte'; // LWC name
