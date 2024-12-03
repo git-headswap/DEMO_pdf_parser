@@ -68,17 +68,27 @@ def tik(words, model="cl100k_base"):
 
 def sidebar():
     with st.sidebar:
-        API_KEY = st.text_input("Enter your API key")
-        if API_KEY:
-            if len(API_KEY) > 45 or len(API_KEY) < 40:
-                st.warning("Please enter a valid API key")
-                API_KEY = None
+        st.title("Salesforce Authentication")
+        
+        client_id = st.text_input("Enter your Client ID (Consumer Key)", "")
+        private_key = st.text_area("Enter your Private Key (for JWT)", type="password", help="Enter the private key for your Salesforce app.")
+        user_name = st.text_input("Enter your Salesforce Username", "")
+        login_url = st.text_input("Enter your Salesforce Login URL (e.g., login.salesforce.com)", "https://login.salesforce.com")
+
+        # Optional: Provide API Key and JWT Token fields for user to input
+        API_KEY = st.text_input("Enter your API key (if applicable)", "")
+        JWT_TOKEN = st.text_input("Enter your JWT token (if applicable)", type="password")
+        
+        if API_KEY and JWT_TOKEN:
+            st.warning("Please only provide either API key OR JWT token, not both! Please clear one.")
+            return None
+        
+        if client_id and private_key and user_name and login_url:
+            return client_id, private_key, user_name, login_url, API_KEY, JWT_TOKEN
         else:
             st.image("static/instructions.png")
-        developer = st.checkbox("Developer mode")
-
-        st.write("[Questions or Feedback](https://forms.gle/Y3xJP6XCFWVrZj4DA)")
-    return API_KEY, developer
+            st.info("Fill out all fields to proceed with authentication.")
+            return None
 
 def pdfParsingDemo(API_KEY):
     st.header("PDF parsing 1 demo")
@@ -141,6 +151,77 @@ def tokenCalculator():
 
 def lightningOutFlowDemowithoutsite():
     st.header("Lightning Out Flow Demo")
+
+# Function to generate JWT token
+def generate_jwt_token(client_id='FAADE4BE63994EFDF2A0D07B2D9A6584C3C2B762A0E94A3FCC2B9D058EA7E938', private_key='3MVG93Qh2UoQgEGvL3H41i8_c.VaV56Ymx1Z7TUs7fQEZ1C959d_D9HR31qcsHg_nnyS4egsiCW0.bIoX6OtL', user_name='khilchand.patil@headswap.com', login_url='https://headswapsa--copy.sandbox.my.salesforce.com', valid_for=300):
+    current_time = time.time()
+    
+    # JWT Payload
+    payload = {
+        "iss": client_id,  # Consumer Key from Salesforce Connected App
+        "sub": user_name,  # Salesforce username
+        "aud": login_url,  # Salesforce login URL
+        "exp": round(current_time) + valid_for  # Expiration time (5 minutes from now)
+    }
+    
+    # JWT Header
+    header = {
+        "alg": "RS256",
+        "typ": "JWT"
+    }
+
+    try:
+        # Encode JWT
+        encoded_jwt = jwt.encode(payload, private_key.encode(), algorithm="RS256", headers=header)
+        return encoded_jwt
+    except Exception as e:
+        st.error(f"Failed to generate JWT: {e}")
+        return None
+
+# Function to authenticate using the JWT token
+def authenticate_with_jwt(jwt_token='6Cel800DFS0000049oBN888FS0000007jA5LUarKGLw2oT4elnLnfnhOVOaDndANbosQfLCAyM58hL000RBAAmZSntuGUsAJgIu28UFleiL', login_url="https://headswapsa--copy.sandbox.my.salesforce-setup.com"):
+    # Salesforce OAuth2 token request URL
+    token_url = f"{login_url}/services/oauth2/token"
+    
+    # Prepare token request payload
+    s2s_flow = {
+        "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        "assertion": jwt_token  # JWT token
+    }
+    
+    try:
+        # Request Salesforce Access Token
+        response = requests.post(token_url, data=s2s_flow)
+        response.raise_for_status()  # Raise an error for bad responses
+        
+        data = response.json()
+        return data["access_token"], data["instance_url"]
+    
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error authenticating with Salesforce: {e}")
+        return None, None
+
+# Function to handle either API key or JWT token
+def handle_authentication(client_id, private_key, user_name, login_url, api_key=None, jwt_token=None):
+    if api_key:
+        st.write("Using API key to generate JWT...")
+        # Generate JWT token from API key (client details)
+        jwt_token = generate_jwt_token(client_id, private_key, user_name, login_url)
+    
+    if jwt_token:
+        st.write("Using JWT for authentication...")
+        # Authenticate using the JWT token
+        access_token, instance_url = authenticate_with_jwt(jwt_token, login_url)
+        
+        if access_token and instance_url:
+            st.success("Authentication successful!")
+            return access_token, instance_url
+        else:
+            st.error("Authentication failed!")
+            return None, None
+    else:
+        st.error("No API key or JWT token provided!")
+        return None, None
 
 
 def lightningOutFlowDemo():
@@ -451,6 +532,21 @@ def tocken_signing():
             st.write(token)
 
 def main():
+        # Create tabs using selectbox
+    tab_selection = st.selectbox("Choose a tab", ["Tab 1", "Tab 2", "Tab 3", "Tab 4"])
+
+    # Handle Tab 4 logic
+    if tab_selection == "Tab 4":
+        client_id, private_key, user_name, login_url, API_KEY, JWT_TOKEN = sidebar()
+
+        if client_id and private_key and user_name and login_url:
+            access_token, instance_url = handle_authentication(client_id, private_key, user_name, login_url, API_KEY, JWT_TOKEN)
+
+            if access_token:
+                st.write(f"Access Token: {access_token}")
+                st.write(f"Instance URL: {instance_url}")
+            else:
+                st.error("Authentication failed!")              
     API_KEY, developer = sidebar()
     if not developer:
         tab1, tab2, tab3, tab4 = st.tabs(["PDF Parsing 1", "Token Calculator", "Lightning Out Flow", "Lightning flow without site"])
